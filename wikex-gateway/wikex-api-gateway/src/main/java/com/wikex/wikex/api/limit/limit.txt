@@ -1,0 +1,6 @@
+1: Current Limiting Identifiers: IP, URI, and UserID
+2: Token Bucket: Redis
+
+1: Introducing the Redis dependency
+2: Creating a Current Limiting Identifier
+3: Configuring the Current Limiting Rate

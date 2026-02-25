@@ -1,0 +1,41 @@
+nohup java -jar wikex-api-gateway.jar >/dev/null 2>&1 &
+nohup java -jar wikex-user-service.jar >/dev/null 2>&1 &
+nohup java -jar wikex-active-service.jar >/dev/null 2>&1 &
+nohup java -jar wikex-exchange-service.jar >/dev/null 2>&1 &
+nohup java -jar wikex-market-service.jar >/dev/null 2>&1 &
+nohup java -jar wikex-p2p-service.jar >/dev/null 2>&1 &
+nohup java -jar wikex-option-service.jar >/dev/null 2>&1 &
+nohup java -jar wikex-swap-service.jar >/dev/null 2>&1 &
+nohup java -jar wikex-second-service.jar >/dev/null 2>&1 &
+nohup java -jar wikex-admin-service.jar >/dev/null 2>&1 &
+nohup java -jar wikex-robot-market-service.jar >/dev/null 2>&1 &
+nohup java -jar wikex-robot-normal-service.jar >/dev/null 2>&1 &
+
+
+db.exchange_order_detail.createIndex({"orderId":-1});
+
+
+
+nohup java -jar -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 wikex-swap-service.jar >/dev/null 2>&1 &
+
+
+
+
+
+
+RLock coffeeLock = redissonClient.getLock("coffee");
+log.info("Entering method");
+try {
+    
+    Future<Boolean> coffeeLockFuture = coffeeLock.tryLockAsync(20, 5, TimeUnit.SECONDS);
+    boolean result = coffeeLockFuture.get();
+    if (result) {
+        log.info("I acquired the lock");
+        
+    }
+} catch (Exception e) {
+    e.printStackTrace();
+} finally {
+    log.info("I released the lock");
+    coffeeLock.unlock();
+}

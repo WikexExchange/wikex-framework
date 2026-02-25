@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wikex.wikex.swap.mapper.MemberContractPositionMapper">
+    <update id="freezePosition">
+        update member_contract_position
+        set frozen_principal_amount = frozen_principal_amount + #{volume}
+        where id = #{id} and principal_amount - frozen_principal_amount >= #{volume}
+    </update>
+
+    <select id="getSetZyZsList" resultType="com.wikex.wikex.swap.entity.MemberContractPosition">
+        select * from member_contract_position
+        where contract_id = #{contractId}
+          and principal_amount-frozen_principal_amount &gt; 0
+          and (min_price &gt;= #{newPrice} or max_price &lt;= #{newPrice} )
+    </select>
+    <select id="queryHoldingPositionMemberIds" resultType="java.lang.Long">
+        select distinct p.member_id from member_contract_position p
+        where p.principal_amount &gt; 0
+    </select>
+    <select id="queryAllHoldingPositions" resultType="com.wikex.wikex.swap.entity.MemberContractPosition">
+        select   p.*,  c.symbol  from member_contract_position p
+        left join contract_coin c on c.id = p.contract_id
+        where p.member_id = #{memberId} and  p.principal_amount &gt; 0
+    </select>
+</mapper>

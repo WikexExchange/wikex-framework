@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache name="es">
+
+    <diskStore path="java.io.tmpdir"/>
+    <defaultCache eternal="false" 
+           maxElementsInMemory="1000"
+           overflowToDisk="false" 
+           diskPersistent="false" 
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="600" 
+           memoryStoreEvictionPolicy="LRU" />
+ 
+    <cache name="shiro-activeSessionCache"
+           maxEntriesLocalHeap="2000"
+           eternal="false"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+    <!--         
+       Configure custom cache        
+       name: Unique identifier of the Cache        
+       maxElementsInMemory: Maximum number of objects allowed in the cache memory        
+       maxElementsOnDisk: Maximum number of cached objects on disk, 0 means unlimited        
+       eternal: Whether elements are permanently valid; if set, timeout settings do not apply and elements never expire        
+       timeToIdleSeconds: The idle time of cached data, which is the maximum interval between two accesses before an element expires; effective only if elements are not eternal. If set to 0, elements can idle indefinitely        
+       timeToLiveSeconds: The lifetime of cached data, i.e., the maximum interval from creation to expiration of an element; effective only if elements are not eternal. If set to 0, elements can live indefinitely        
+       overflowToDisk: Whether to enable disk cache when memory is insufficient        
+       diskPersistent: Whether to persist cache data across JVM restarts        
+       diskExpiryThreadIntervalSeconds: Interval for the disk expiry thread to run, default is 120 seconds        
+       diskSpoolBufferSizeMB: Sets the buffer size for the DiskStore (disk cache), default is 30MB. Each Cache should have its own buffer        
+       memoryStoreEvictionPolicy: Eviction algorithm when cache is full. Default is LRU (Least Recently Used). You can set FIFO (First In First Out) or LFU (Least Frequently Used)        
+      -->
+    <cache name="mybatisCache"         
+        maxElementsInMemory="10000"         
+        eternal="false"        
+        overflowToDisk="false"         
+        timeToIdleSeconds="900"         
+        timeToLiveSeconds="1800"        
+        memoryStoreEvictionPolicy="LFU" />  
+</ehcache>

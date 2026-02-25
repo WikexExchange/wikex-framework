@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: wikex-gateway
+  cloud:
+    nacos:
+      config:
+        file-extension: yaml
+        server-addr: ${nacos.server-addr}
+        username: ${nacos.username}
+        password: ${nacos.password}
+        auto-refresh: true # Enable dynamic configuration refresh
+        shared-configs: wikex-base.yaml
+      discovery:
+        # Nacos registration address
+        server-addr: ${nacos.server-addr}
+        username: ${nacos.username}
+        password: ${nacos.password}
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            # Allow credentials to be included
+            # Allowed origins (website domain/IP), set * to allow all
+            # Allowed headers in cross-origin requests, set * to allow all
+            # Allowed methods in cross-origin requests, defaults to GET and OPTIONS, set * to allow all
+            # Max age for CORS preflight requests
+            allow-credentials: true
+            allowed-origins: "*"
+#              - "http://127.0.0.1:8080"
+#              - "http://localhost:13010"
+            allowed-headers: "*"
+            allowed-methods: "*"
+            max-age: 3600
+#        default-filters:
+#          - DedupeResponseHeader=Vary Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST

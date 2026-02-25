@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wikex.wikex.user.mapper.TokenSnapshotMapper">
+    <insert id="upsertBatch">
+        INSERT INTO token_snapshot (member_id, token_symbol, snapshot_date, snapshot_quantity, snapshot_price, snapshot_value) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.memberId}, #{item.tokenSymbol}, #{item.snapshotDate}, #{item.snapshotQuantity}, #{item.snapshotPrice}, #{item.snapshotValue})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        snapshot_quantity = VALUES(snapshot_quantity),
+        snapshot_price    = VALUES(snapshot_price),
+        snapshot_value    = VALUES(snapshot_value)
+    </insert>
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>wikex</artifactId>
+        <groupId>com.wikex</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>wikex-service</artifactId>
+    <packaging>pom</packaging>
+    <description>
+        All microservice projects parent project
+    </description>
+    <modules>
+        <module>wikex-user-service</module>
+        <module>wikex-permission-service</module>
+        <module>wikex-active-service</module>
+        <module>wikex-admin-service</module>
+        <module>wikex-exchange-service</module>
+        <module>wikex-market-service</module>
+        <module>wikex-match-service</module>
+        <module>wikex-swap-service</module>
+        <module>wikex-second-service</module>
+        <module>wikex-option-service</module>
+        <module>wikex-p2p-service</module>
+        <module>wikex-robot-market-service</module>
+        <module>wikex-robot-normal-service</module>
+        <module>wikex-coinswap-service</module>
+        <module>wikex-earn-service</module>
+        <module>wikex-agent-service</module>
+        <module>wikex-udun-service</module>
+        <module>wikex-kline-tools</module>
+        <module>wikex-open-service</module>
+        <module>wikex-delivery-service</module>
+        <module>wikex-chat-service</module>
+        <module>wikex-blog-service</module>
+    </modules>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.wikex</groupId>
+            <artifactId>wikex-service-dependency</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wikex</groupId>
+            <artifactId>wikex-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+</project>

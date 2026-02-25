@@ -1,0 +1,53 @@
+# =============================================================================target/
+
+# Wikex Platform - Docker Build Ignorelogs/
+
+# =============================================================================*.log
+
+.git/
+
+# Version Control.idea/
+
+.git*.iml
+
+.gitignorenode_modules/
+
+.DS_Store
+
+# IDE Files.env.local
+
+.vscodeThumbs.db
+
+.idea*.class
+*.iml
+
+# Build artifacts (will be built inside container)
+target/
+**/target/
+
+# Logs
+logs/
+*.log
+
+# OS Files  
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs/
+
+# Docker files (except main ones)
+docker-compose.*.yml
+!docker-compose.yml
+!Dockerfile
+
+# Environment
+.env.local
+.env.development
+.env.test
+
+# Temporary files
+*.tmp
+*.swp
+*~

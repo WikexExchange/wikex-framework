@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: wikex-chat
+  cloud:
+    nacos:
+      config:
+        file-extension: yaml
+        server-addr: ${nacos.server-addr}
+        username: ${nacos.username}
+        password: ${nacos.password}
+        auto-refresh: true 
+        shared-configs: wikex-base.yaml,email-sms.yaml,wikex-seata.yaml
+      discovery:
+        
+        server-addr: ${nacos.server-addr}
+        username: ${nacos.username}
+        password: ${nacos.password}

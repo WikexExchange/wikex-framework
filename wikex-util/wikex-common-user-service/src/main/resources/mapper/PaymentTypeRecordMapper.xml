@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wikex.wikex.user.mapper.PaymentTypeRecordMapper">
+    <resultMap id="BaseResultMap" type="com.wikex.wikex.user.entity.PaymentTypeRecord">
+        <id column="id" property="id"></id>
+        <result column="member_id" property="memberId"></result>
+        <result column="type" property="type"></result>
+        <result column="field_1" property="field_1"></result>
+        <result column="field_2" property="field_2"></result>
+        <result column="field_3" property="field_3"></result>
+        <result column="field_4" property="field_4"></result>
+        <result column="field_5" property="field_5"></result>
+        <result column="field_6" property="field_6"></result>
+        <result column="field_7" property="field_7"></result>
+        <result column="type_name" property="typeName"></result>
+    </resultMap>
+    <select id="getRecordsByUserId" resultMap="BaseResultMap">
+        select r.*,t.code as type_name from payment_type_record r
+        left join payment_type t on r.type = t.id
+        where r.member_id = #{userId}
+    </select>
+</mapper>

@@ -1,0 +1,1 @@
+alter table `na_user`.member add reward_wallet_address NVARCHAR(255) NULL;

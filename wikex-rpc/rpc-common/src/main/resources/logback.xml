@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Spring provides some extensions for Logback.  
+    If you want to use these extensions, replace the file name with this file instead of logback.xml.  
+    See: https://docs.spring.io/spring-boot/docs/1.5.6.RELEASE/reference/htmlsingle/#boot-features-logging
+-->
+<configuration debug="false">
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+
+    <!-- Define the storage path of log files.  
+         Do not use relative paths in Logback configuration. -->
+    <property name="LOG_HOME" value="logs/${springAppName}" />
+
+    <!-- Console output -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!-- Format output:  
+                 %d - date  
+                 %thread - thread name  
+                 %-5level - log level (left-aligned, width 5)  
+                 %msg - log message  
+                 %n - newline -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %green(%-5level) %blue(%property{PID}) --- [%-20thread] %cyan(%-70logger{50}) : %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Generate log files daily -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Disable prudent mode -->
+        <prudent>false</prudent>
+        <file>${LOG_HOME}/out.log</file>
+        <!--<file>${LOG_HOME}/%d{yyyy-MM-dd}/log.log</file>-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- Log file output name -->
+            <fileNamePattern>${LOG_HOME}/log-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- Number of days to retain log files -->
+            <maxHistory>30</maxHistory>
+            <maxFileSize>30MB</maxFileSize>
+            <!-- Maximum total log size -->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!-- Format output: %d - date, %thread - thread name, %-5level - log level, %msg - message, %n - newline -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level - %msg%n</pattern>
+        </encoder>
+        <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <!-- Filter out TRACE and DEBUG level logs -->
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <!-- Asynchronous output -->
+    <appender name ="ASYNC" class= "ch.qos.logback.classic.AsyncAppender">
+        <!-- Do not lose logs.  
+             By default, if 80% of the queue is full, TRACE, DEBUG, and INFO level logs will be discarded. -->
+        <!--<discardingThreshold >0</discardingThreshold>-->
+        <!-- Change the default queue depth.  
+             This value affects performance. Default is 256. -->
+        <queueSize>512</queueSize>
+        <!-- Add an additional appender (only one can be added) -->
+        <appender-ref ref ="FILE"/>
+    </appender>
+
+    <!--<logger name="org.springframework.amqp" level="INFO"/>
+    <logger name="org.springframework.boot" level="INFO"/>-->
+    <!--<logger name="com.inspur" level="INFO"/>-->
+
+    <!-- Root log output level -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNC" />
+    </root>
+</configuration>

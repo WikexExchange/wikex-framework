@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache name="es">
+
+	<diskStore path="java.io.tmpdir"/>
+	<defaultCache eternal="false"
+				  maxElementsInMemory="1000"
+				  overflowToDisk="false"
+				  diskPersistent="false"
+				  timeToIdleSeconds="0"
+				  timeToLiveSeconds="600"
+				  memoryStoreEvictionPolicy="LRU" />
+
+	<cache name="shiro-activeSessionCache"
+		   maxEntriesLocalHeap="2000"
+		   eternal="false"
+		   timeToIdleSeconds="3600"
+		   timeToLiveSeconds="0"
+		   overflowToDisk="false"
+		   statistics="true">
+	</cache>
+	<!--
+   	 Configure custom cache
+    name: Unique identifier for the cache
+    maxElementsInMemory: Maximum number of objects allowed in memory
+    maxElementsOnDisk: Maximum number of objects cached on disk, 0 means unlimited
+    eternal: Whether the element is permanently valid. Once set, timeout will not take effect, and the object will never expire.
+    timeToIdleSeconds: Idle time of the cached data. This is the maximum interval between two accesses before an element expires.
+                       This is valid only when the element is not set as eternal.
+                       If the value is 0, it means the element can remain idle indefinitely.
+    timeToLiveSeconds: Lifetime of the cached data. This is the maximum time interval from creation to expiration of an element.
+                       This is valid only when the element is not set as eternal.
+                       If the value is 0, it means the element can live indefinitely.
+    overflowToDisk: Whether to enable disk caching when memory is insufficient.
+    diskPersistent: Whether to persist data across JVM restarts.
+    diskExpiryThreadIntervalSeconds: Interval time (in seconds) at which the disk expiration thread runs. Default is 120 seconds.
+    diskSpoolBufferSizeMB: Sets the buffer size for the DiskStore (disk cache). Default is 30MB. Each cache should have its own buffer.
+    memoryStoreEvictionPolicy: Eviction policy when the cache is full. Default is LRU (Least Recently Used).
+                               You can set it to FIFO (First In First Out) or LFU (Least Frequently Used).
+      -->
+	<cache name="mybatisCache"
+		   maxElementsInMemory="10000"
+		   eternal="false"
+		   overflowToDisk="false"
+		   timeToIdleSeconds="900"
+		   timeToLiveSeconds="1800"
+		   memoryStoreEvictionPolicy="LFU" />
+</ehcache>

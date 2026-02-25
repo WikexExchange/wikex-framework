@@ -1,0 +1,7 @@
+CREATE TABLE coin_links (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    coin_id BIGINT NOT NULL,
+    type VARCHAR(50),
+    name VARCHAR(100),
+    url TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: wikex-rpc-btc
+  cloud:
+    nacos:
+      config:
+        file-extension: yaml
+        server-addr: ${nacos.server-addr}
+        username: ${nacos.username}
+        password: ${nacos.password}
+        auto-refresh: true # Whether to enable dynamic configuration refresh
+        shared-configs: wikex-base.yaml,wikex-seata.yaml
+      discovery:
+        # Nacos registration address
+        server-addr: ${nacos.server-addr}
+        username: ${nacos.username}
+        password: ${nacos.password}

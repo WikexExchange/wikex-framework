@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wikex.wikex.user.mapper.EquitySnapshotMapper">
+    <insert id="upsertBatch">
+        INSERT INTO equity_snapshot (member_id, `date`, total_equity, total_pnl, realized_pnl, unrealized_pnl) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.memberId}, #{item.date}, #{item.totalEquity}, #{item.totalPnl}, #{item.realizedPnl}, #{item.unrealizedPnl})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        total_equity = VALUES(total_equity),
+        total_pnl    = VALUES(total_pnl)
+    </insert>
+</mapper>

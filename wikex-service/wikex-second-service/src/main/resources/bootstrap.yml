@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: wikex-second
+  cloud:
+    nacos:
+      config:
+        file-extension: yaml
+        auto-refresh: true 
+        server-addr: ${nacos.server-addr}
+        username: ${nacos.username}
+        password: ${nacos.password}
+        shared-configs: wikex-base.yaml,email-sms.yaml,wikex-seata.yaml
+      discovery:
+        server-addr: ${nacos.server-addr}
+        username: ${nacos.username}
+        password: ${nacos.password}

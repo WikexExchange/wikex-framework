@@ -1,0 +1,610 @@
+# =============================================================================
+# Wikex Platform - Complete Deployment
+# Single command deployment: docker-compose up -d
+# Ensures all services run within the same Docker network
+# =============================================================================
+
+# Global logging configuration template
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+    compress: "true"
+
+services:
+  # =============================================================================
+  # Infrastructure Services
+  # =============================================================================
+  # nacos:
+  #   image: nacos/nacos-server:v2.2.3
+  #   container_name: wikex-nacos
+  #   ports:
+  #     - "8848:8848"
+  #     - "9848:9848"
+  #     - "9849:9849"
+  #   environment:
+  #     MODE: standalone
+  #     NACOS_SERVER_PORT: 8848
+  #     JVM_XMS: 256m
+  #     JVM_XMX: 256m
+  #     # Authentication configuration
+  #     NACOS_AUTH_ENABLE: true
+  #     NACOS_AUTH_TOKEN: VGhpc0lzTXlDdXN0b21TZWNyZXRLZXkwMTIzNDU2Nzg5QUJDREVGGhpcjlK
+  #     NACOS_AUTH_IDENTITY_KEY: nacos
+  #     NACOS_AUTH_IDENTITY_VALUE: GIdQOvzeFEhjmYkB
+  #     NACOS_AUTH_SYSTEM_TYPE: nacos
+  #   volumes:
+  #     - nacos-data:/home/nacos/data
+  #   logging: *default-logging
+  #   networks:
+  #     - wikex-network
+  #   restart: unless-stopped
+
+  # mysql:
+  #   image: mysql:5.7
+  #   container_name: wikex-mysql
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: wikex123
+  #     MYSQL_DATABASE: wikex_db
+  #   volumes:
+  #     - mysql-data:/var/lib/mysql
+  #     - ./config/mysql/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+  #   logging: *default-logging
+  #   networks:
+  #     - wikex-network
+  #   restart: unless-stopped
+
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: wikex-redis
+  #   ports:
+  #     - "6379:6379"
+  #   command: redis-server --requirepass wikex123
+  #   volumes:
+  #     - redis-data:/data
+  #   logging: *default-logging
+  #   networks:
+  #     - wikex-network
+  #   restart: unless-stopped
+
+  # # RocketMQ NameServer
+  # rocketmq-namesrv:
+  #   image: rocketmqinc/rocketmq
+  #   container_name: wikex-rocketmq-namesrv
+  #   ports:
+  #     - "9876:9876"
+  #   environment:
+  #     MAX_POSSIBLE_HEAP: 100000000
+  #   command: sh mqnamesrv
+  #   volumes:
+  #     - rocketmq-namesrv-logs:/home/rocketmq/logs
+  #     - rocketmq-namesrv-store:/home/rocketmq/store
+  #   logging: *default-logging
+  #   networks:
+  #     - wikex-network
+  #   restart: unless-stopped
+
+  # # RocketMQ Broker
+  # rocketmq-broker:
+  #   image: rocketmqinc/rocketmq
+  #   container_name: wikex-rocketmq-broker
+  #   ports:
+  #     - "10909:10909"
+  #     - "10911:10911"
+  #   environment:
+  #     NAMESRV_ADDR: "rocketmq-namesrv:9876"
+  #     MAX_POSSIBLE_HEAP: 200000000
+  #   command: sh mqbroker -n rocketmq-namesrv:9876 -c /opt/rocketmq/conf/broker.conf
+  #   volumes:
+  #     - rocketmq-broker-logs:/home/rocketmq/logs
+  #     - rocketmq-broker-store:/home/rocketmq/store
+  #     - ./config/rocketmq/broker.conf:/opt/rocketmq/conf/broker.conf:ro
+  #   depends_on:
+  #     - rocketmq-namesrv
+  #   logging: *default-logging
+  #   networks:
+  #     - wikex-network
+  #   restart: unless-stopped
+
+  # # Seata Server
+  # seata-server:
+  #   image: seataio/seata-server:1.4.2
+  #   container_name: wikex-seata-server
+  #   ports:
+  #     - "8091:8091"
+  #   environment:
+  #     SEATA_PORT: 8091
+  #     STORE_MODE: db
+  #     SEATA_CONFIG_NAME: file:/seata-server/resources/registry.conf
+  #   volumes:
+  #     - ./config/seata/registry.conf:/seata-server/resources/registry.conf:ro
+  #     - seata-logs:/root/logs
+  #   depends_on:
+  #     - nacos
+  #     - mysql
+  #   logging: *default-logging
+  #   networks:
+  #     - wikex-network
+  #   restart: unless-stopped
+
+  # # MongoDB
+  # mongodb:
+  #   image: mongo:6.0
+  #   container_name: wikex-mongodb
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: admin
+  #     MONGO_INITDB_ROOT_PASSWORD: wikex123
+  #     MONGO_INITDB_DATABASE: wikex_mongo
+  #   volumes:
+  #     - mongodb-data:/data/db
+  #     - mongodb-config:/data/configdb
+  #   logging: *default-logging
+  #   networks:
+  #     - wikex-network
+  #   restart: unless-stopped
+
+  # # Sentinel Dashboard
+  # sentinel-dashboard:
+  #   image: bladex/sentinel-dashboard:1.8.6
+  #   container_name: wikex-sentinel-dashboard
+  #   ports:
+  #     - "8858:8858"
+  #   environment:
+  #     JAVA_OPTS: "-Dserver.port=8858 -Dcsp.sentinel.dashboard.server=localhost:8858 -Dproject.name=sentinel-dashboard"
+  #   logging: *default-logging
+  #   networks:
+  #     - wikex-network
+  #   restart: unless-stopped
+
+  # # RocketMQ Console (Management UI)
+  # rocketmq-console:
+  #   image: styletang/rocketmq-console-ng:latest
+  #   container_name: wikex-rocketmq-console
+  #   ports:
+  #     - "28080:8080"
+  #   environment:
+  #     JAVA_OPTS: "-Drocketmq.namesrv.addr=rocketmq-namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+  #   depends_on:
+  #     - rocketmq-namesrv
+  #   logging: *default-logging
+  #   networks:
+  #     - wikex-network
+  #   restart: unless-stopped
+  # =============================================================================
+  # Core Services
+  # =============================================================================
+
+  # Gateway Service (API Gateway)
+  gateway:
+    build:
+      context: .
+      target: gateway
+    image: wikex/gateway:latest
+    container_name: wikex-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - nacos
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # Exchange Service
+  exchange-service:
+    build:
+      context: .
+      target: exchange-service
+    image: wikex/exchange-service:latest
+    container_name: wikex-exchange-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # Market Service
+  market-service:
+    build:
+      context: .
+      target: market-service
+    image: wikex/market-service:latest
+    container_name: wikex-market-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # Match Services (Multiple instances for load balancing)
+  match0-service:
+    build:
+      context: .
+      target: match-service
+    image: wikex/match-service:latest
+    container_name: wikex-match0-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: match0
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  match1-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: match-service
+    image: wikex/match-service:latest
+    container_name: wikex-match1-service
+    ports:
+      - "8103:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: match1
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  match2-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: match-service
+    image: wikex/match-service:latest
+    container_name: wikex-match2-service
+    ports:
+      - "8104:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: match2
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # Job Admin Service
+  job-admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: job-admin
+    image: wikex/job-admin:latest
+    container_name: wikex-job-admin
+    ports:
+      - "58080:58080"
+    depends_on:
+      - nacos
+      - mysql
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # User Service
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: user-service
+    image: wikex/user-service:latest
+    container_name: wikex-user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+  # Admin Service
+  admin-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: admin-service
+    image: wikex/admin-service:latest
+    container_name: wikex-admin-service
+    ports:
+      - "8087:8087"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # Robot Market Service
+  robot-market-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: robot-market-service
+    image: wikex/robot-market-service:latest
+    container_name: wikex-robot-market-service
+    ports:
+      - "8090:8090"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # Robot Normal Service
+  robot-normal-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: robot-normal-service
+    image: wikex/robot-normal-service:latest
+    container_name: wikex-robot-normal-service
+    ports:
+      - "8091:8091"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # # P2P Service
+  p2p-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: p2p-service
+    image: wikex/p2p-service:latest
+    container_name: wikex-p2p-service
+    ports:
+      - "8089:8089"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # # Active Service
+  active-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: active-service
+    image: wikex/active-service:latest
+    container_name: wikex-active-service
+    ports:
+      - "8094:8094"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # # Agent Service
+  agent-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: agent-service
+    image: wikex/agent-service:latest
+    container_name: wikex-agent-service
+    ports:
+      - "8088:8088"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # # Earn Service
+  earn-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: earn-service
+    image: wikex/earn-service:latest
+    container_name: wikex-earn-service
+    ports:
+      - "8095:8095"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # # Chat Service
+  chat-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: chat-service
+    image: wikex/chat-service:latest
+    container_name: wikex-chat-service
+    ports:
+      - "8096:8096"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # # Open Service
+  open-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: open-service
+    image: wikex/open-service:latest
+    container_name: wikex-open-service
+    ports:
+      - "8097:8097"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+  # Kline Tools
+  kline-tools:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: kline-tools
+    image: wikex/kline-tools:latest
+    container_name: wikex-kline-tools
+    ports:
+      - "8098:8098"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # Swap Service
+  swap-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: swap-service
+    image: wikex/swap-service:latest
+    container_name: wikex-swap-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # Coinswap Service
+  coinswap-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: coinswap-service
+    image: wikex/coinswap-service:latest
+    container_name: wikex-coinswap-service
+    ports:
+      - "8099:8099"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # Second Service
+  second-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: second-service
+    image: wikex/second-service:latest
+    container_name: wikex-second-service
+    ports:
+      - "8100:8100"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+  # Option Service
+  option-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: option-service
+    image: wikex/option-service:latest
+    container_name: wikex-option-service
+    ports:
+      - "8101:8101"
+    depends_on:
+      - nacos
+      - mysql
+      - redis
+    logging: *default-logging
+    networks:
+      - wikex-network
+    restart: unless-stopped
+
+volumes:
+  nacos-data:
+  mysql-data:
+  redis-data:
+  mongodb-data:
+  mongodb-config:
+  rocketmq-namesrv-logs:
+  rocketmq-namesrv-store:
+  rocketmq-broker-logs:
+  rocketmq-broker-store:
+  seata-logs:
+
+
+networks:
+  wikex-network:
+    driver: bridge

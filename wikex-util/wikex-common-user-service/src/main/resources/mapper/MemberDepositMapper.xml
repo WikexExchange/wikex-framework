@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wikex.wikex.user.mapper.MemberDepositMapper">
+    <select id="findAll" resultType="com.wikex.wikex.user.entity.MemberDeposit">
+        select d.*,m.username,m.registration_time
+        from member_deposit d
+        left join member m on d.member_id = m.id
+        <where>
+            <if test="screen.unit!=null">
+                a.unit = #{screen.unit}
+            </if>
+            <if test="screen.address!=null and screen.address != ''">
+                a.address = #{screen.address}
+            </if>
+            <if test="screen.account!=null and screen.account!=''">
+                and ( m.username like concat('%',#{screen.account},'%') or m.real_name like concat('%',#{screen.account},'%') )
+            </if>
+            <if test="screen.inviterId != null">
+                and m.inviter_id = #{screen.inviterId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="getDepositStatistics" resultType="com.wikex.wikex.user.entity.MemberDeposit">
+        select unit,sum(amount) as amount from member_deposit where date_format(create_time,'%Y-%m-%d') = #{dateStr} group by unit
+    </select>
+   <select id="findDeposit" resultType="com.wikex.wikex.user.entity.MemberDeposit">
+  select * from member_deposit where address = #{address} and txid = #{txHash} and log_index = #{logIndex} 
+</select>
+
+<select id="findDepositForUpdate" resultType="com.wikex.wikex.user.entity.MemberDeposit">
+  select * from member_deposit where address = #{address} and txid = #{txHash} and log_index = #{logIndex} for update
+</select>
+<select id="findByMemberId" resultType="com.wikex.wikex.user.entity.MemberDeposit">
+  select *
+  from member_deposit
+  where member_id = #{memberId}
+  order by create_time desc
+</select>
+</mapper>

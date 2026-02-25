@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>wikex</artifactId>
+        <groupId>com.wikex</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <description>
+        Beans and Feign interfaces corresponding to all database tables
+    </description>
+    <artifactId>wikex-api</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>wikex-permission-api</module>
+        <module>wikex-user-api</module>
+        <module>wikex-active-api</module>
+        <module>wikex-admin-api</module>
+        <module>wikex-exchange-api</module>
+        <module>wikex-market-api</module>
+        <module>wikex-swap-api</module>
+        <module>wikex-second-api</module>
+        <module>wikex-option-api</module>
+        <module>wikex-p2p-api</module>
+        <module>wikex-robot-market-api</module>
+        <module>wikex-robot-normal-api</module>
+        <module>wikex-coinswap-api</module>
+        <module>wikex-earn-api</module>
+        <module>wikex-rpc-api</module>
+        <module>wikex-udun-api</module>
+        <module>wikex-blog-api</module>
+    </modules>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+    <dependencies>
+        <!-- MyBatis Plus -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.3.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Common Toolkit -->
+        <dependency>
+            <groupId>com.wikex</groupId>
+            <artifactId>wikex-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- OpenFeign -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>2.2.5.RELEASE</version>
+        </dependency>
+
+        <!-- JPA -->
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+    </dependencies>
+</project>
